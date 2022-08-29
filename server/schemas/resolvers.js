@@ -48,17 +48,18 @@ const resolvers = {
       }
       throw new AuthenticationError("Log in to save book");
     },
+
+    removeBook: async (parent, book, context) => {
+      if (context.user) {
+        const data = await User.findOneAndUpdate(
+          { _id: context.user._id },
+          { $pull: { savedBooks: { bookId: book.bookId } } },
+          { new: true }
+        );
+        return data;
+      }
+      throw new AuthenticationError("You need to be logged in!");
+    },
   },
-  //     removeBook: async (parent, { book }, context) => {
-  //       if (context.user) {
-  //         return User.findOneAndUpdate(
-  //           { _id: context.user._id },
-  //           { $pull: { savedBook: { bookId: book.bookId } } },
-  //           { new: true }
-  //         );
-  //       }
-  //       throw new AuthenticationError("You need to be logged in!");
-  //     },
-  //   },
 };
 module.exports = resolvers;
